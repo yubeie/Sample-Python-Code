@@ -1,0 +1,33 @@
+#http://maps.googleapis.com/maps/api/geocode/json?parameters
+#parameters include: address or components AND key if any
+
+
+import re
+import urllib
+import json
+
+def country_code(str):
+    search_url = 'http://maps.googleapis.com/maps/api/geocode/json?'
+    final_url = search_url + urllib.urlencode({'address':str})
+    url_handle = urllib.urlopen(final_url)
+    data = url_handle.read()
+    extracted_data = json.loads(data)
+    pretty_data = json.dumps(extracted_data, indent=4)
+    address_components = extracted_data['results'][0]['address_components']
+    #print len(address_components)
+    country_code = address_components[3]['short_name']
+    print country_code
+
+while True:
+    try:
+        loc = raw_input("Enter Location: ")
+        str = str(loc)
+        if str == 'quit':
+            print 'exiting the program'
+            break
+        else:
+            country_code(str)
+            break
+    except:
+        print "Please enter valid location"
+        continue
