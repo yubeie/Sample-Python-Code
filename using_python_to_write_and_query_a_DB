@@ -1,0 +1,46 @@
+import re
+import sqlite3
+import urllib
+
+db_handle = sqlite3.connect('domaindb.sqlite')
+crsr = db_handle.cursor()
+
+crsr.execute('DROP TABLE IF EXISTS Counts')
+crsr.execute('CREATE TABLE Counts( org TEXT, count INTEGER)')
+
+
+#file_name = 'mbox.txt'
+#file_handle = open(file_name)
+url_handle = urllib.urlopen('http://www.pythonlearn.com/code/mbox.txt')
+
+for line in url_handle:
+    if not line.startswith('From:'):
+        continue
+    else:
+        line_list = line.split()
+        email_address = line_list[1]
+        #print email_address
+        org_list = re.findall('@(.*)', email_address)
+        org = org_list[0]
+        crsr.execute('SELECT count FROM Counts WHERE org=?',(org,))
+        try:
+            count = crsr.fetchone()[0]
+            #print count
+            crsr.execute('UPDATE Counts SET count=count+1 WHERE org=?',(org,))
+        except:
+            crsr.execute('INSERT INTO Counts(org,count) VALUES(?,1)',(org,))
+    db_handle.commit()
+
+
+#print the data
+
+sqlstr = 'SELECT * FROM Counts ORDER BY count DESC'
+crsr.execute(sqlstr)
+my_list = crsr.fetchall()
+#print my_list
+
+for element in my_list:
+    print str(element[0]), element[1]
+
+url_handle.close()
+db_handle.close()
