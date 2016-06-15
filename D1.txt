@@ -1,0 +1,5 @@
+DS12    two-legged  cat1
+DS56    four-legged cat2
+DS23    two-legged  cat1
+DS45    four-legged cat2
+DS67    two-legged  cat3
